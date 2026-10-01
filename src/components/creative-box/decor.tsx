@@ -274,6 +274,129 @@ export const BlueprintStack = ({ className = '' }: P) => (
   </svg>
 );
 
+/* ---------- Step 3 (Manfaat): ikon tunas, lencana, bumi dirawat daun ---------- */
+export const GrowthIcon = ({ className = '' }: P) => (
+  <svg viewBox="0 0 40 40" className={className} aria-hidden>
+    <ellipse cx="20" cy="33.5" rx="13" ry="4" fill="#c9966a" />
+    <ellipse cx="20" cy="32.5" rx="11" ry="3" fill="#dcae85" />
+    <path d="M20 32V17" stroke="#3f8f6b" strokeWidth="2.6" strokeLinecap="round" />
+    <path d="M20 23C12 23 8 18 8 11c7 0 12 4 12 12z" fill="#6fbf8b" />
+    <path d="M20 18c0-8 5-12 13-12 0 7-5 12-13 12z" fill="#4fa08f" />
+    <path d="M12 15l6 6M24 12l-3 4" stroke="#fff" strokeOpacity=".45" strokeWidth="1.2" strokeLinecap="round" />
+    <path d="M32 22q3 4 0 6-3-2 0-6z" fill="#8cc9f2" />
+    <path d={SPARK} transform="translate(4 24) scale(.3)" fill="#ffd45e" />
+  </svg>
+);
+
+export const BadgeSticker = ({ className = '' }: P) => (
+  <svg viewBox="0 0 60 80" className={className} aria-hidden>
+    <path d="M18 42L9 74l13-7 7 9 4-34z" fill="#8f84e3" />
+    <path d="M42 42l9 32-13-7-7 9-4-34z" fill="#6a5fc9" />
+    <circle cx="30" cy="28" r="23" fill="#ffd45e" stroke="#f0a63a" strokeWidth="2.5" />
+    <circle cx="30" cy="28" r="23" fill="none" stroke="#fff" strokeOpacity=".8" strokeWidth="1.6" strokeDasharray="1.5 4" strokeLinecap="round" transform="scale(.86) translate(4.9 4.6)" />
+    <circle cx="30" cy="28" r="16" fill="#ffe58a" />
+    <path d={OSTAR} transform="translate(16.5 14.5) scale(1.15)" fill="#fff" stroke="#f0a63a" strokeWidth="1.3" strokeLinejoin="round" />
+  </svg>
+);
+
+export const EarthCare = ({ className = '' }: P) => (
+  <svg viewBox="0 0 96 84" className={className} aria-hidden>
+    <circle cx="48" cy="42" r="36" fill="#dff3ff" opacity=".6" />
+    <path d="M48 16V9" stroke="#3f8f6b" strokeWidth="2.2" strokeLinecap="round" />
+    <path d="M48 12c-8 0-11-5-11-10 7 0 11 4 11 10z" fill="#6fbf8b" />
+    <path d="M48 10c0-8 5-12 12-12 0 7-4 12-12 12z" fill="#4fa08f" transform="translate(0 2)" />
+    <circle cx="48" cy="42" r="26" fill="#7cc0ee" stroke="#3f7fb5" strokeWidth="2.5" />
+    <path d="M30 32c5-6 12-4 14 2s-5 7-3 12-9 5-12-2c-2-5-2-8 1-12zM54 48c5-2 10 0 10 5s-5 8-8 5-3-8-2-10z" fill="#7fcf8f" />
+    <path d="M32 24c5-4 9-5 13-5" stroke="#fff" strokeOpacity=".65" strokeWidth="3" strokeLinecap="round" fill="none" />
+    <path d="M8 58c3 12 18 20 34 16C38 62 24 54 8 58z" fill="#6fbf8b" />
+    <path d="M88 58c-3 12-18 20-34 16 4-12 18-20 34-16z" fill="#4fa08f" />
+    <path d="M14 62c8 2 17 6 23 11M82 62c-8 2-17 6-23 11" stroke="#fff" strokeOpacity=".45" strokeWidth="1.3" strokeLinecap="round" fill="none" />
+    <path transform="translate(76 14) scale(.55)" d="M12 20s-7-4.5-8.5-9A4.5 4.5 0 0 1 12 7a4.5 4.5 0 0 1 8.5 4C19 15.5 12 20 12 20z" fill="#ffc2d4" stroke="#f58fb0" strokeWidth="1.8" strokeLinejoin="round" />
+    <path transform="translate(8 22) scale(.4)" d="M12 20s-7-4.5-8.5-9A4.5 4.5 0 0 1 12 7a4.5 4.5 0 0 1 8.5 4C19 15.5 12 20 12 20z" fill="#ffc2d4" stroke="#f58fb0" strokeWidth="2.2" strokeLinejoin="round" />
+    <path d={SPARK} transform="translate(82 40) scale(.45)" fill="#ffd45e" />
+    <path d={SPARK} transform="translate(4 44) scale(.35)" fill="#c4bdf5" />
+  </svg>
+);
+
+/* ---------- Step 4 (Identitas): ikon privasi, ID card gantung, amplop terbang ---------- */
+export const PrivacyIcon = ({ className = '' }: P) => (
+  <svg viewBox="0 0 40 40" className={className} aria-hidden>
+    <circle cx="16" cy="13" r="6.5" fill="#8f84e3" />
+    <path d="M4 33c0-9 5.5-13 12-13s12 4 12 13z" fill="#a79df3" />
+    <path d="M30 17l8.5 3v7.5c0 5.5-4.2 8.8-8.5 10.5-4.3-1.7-8.5-5-8.5-10.5V20z" fill="#6a5fc9" stroke="#fff" strokeWidth="1.6" strokeLinejoin="round" />
+    <path d="M26.2 27.5l2.8 2.8 5-5.6" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+  </svg>
+);
+
+/** ID card gantung. `anonymous` = foto ditutup kacamata/topi & data diganti garis putus-putus */
+export const IdCard = ({ className = '', anonymous = true }: P & { anonymous?: boolean }) => (
+  <svg viewBox="0 -4 70 104" className={className} aria-hidden>
+    <path d="M20-4l15 28 15-28" stroke="#8f84e3" strokeWidth="6" fill="none" strokeLinejoin="round" />
+    <rect x="30" y="22" width="10" height="9" rx="2" fill="#6a5fc9" />
+    <rect x="9" y="34" width="54" height="64" rx="7" fill="#3a3380" opacity=".18" />
+    <rect x="8" y="31" width="54" height="64" rx="7" fill="#fff" stroke="#cfc9f0" strokeWidth="1.3" />
+    <rect x="27" y="35" width="16" height="4" rx="2" fill="#e6e2fb" />
+    {anonymous ? (
+      <>
+        <circle cx="35" cy="56" r="11" fill="#e6e2fb" />
+        <path d="M27 54h16M29.5 54l2-6h7l2 6" stroke="#6a5fc9" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+        <circle cx="31" cy="60" r="2.8" fill="none" stroke="#6a5fc9" strokeWidth="1.6" />
+        <circle cx="39" cy="60" r="2.8" fill="none" stroke="#6a5fc9" strokeWidth="1.6" />
+        <path d="M17 75h36M21 83h28M25 90h20" stroke="#cfc9f0" strokeWidth="3" strokeLinecap="round" strokeDasharray="1 5" />
+      </>
+    ) : (
+      <>
+        <circle cx="35" cy="56" r="11" fill="#a79df3" />
+        <circle cx="35" cy="52.5" r="4.2" fill="#fff" />
+        <path d="M27 63c1-5 4-6.5 8-6.5s7 1.5 8 6.5a11 11 0 0 1-16 0z" fill="#fff" />
+        <path d="M17 75h36" stroke="#6a5fc9" strokeWidth="3.5" strokeLinecap="round" />
+        <path d="M21 83h28" stroke="#cfc9f0" strokeWidth="3" strokeLinecap="round" />
+        <path d="M25 90h20" stroke="#e6e2fb" strokeWidth="3" strokeLinecap="round" />
+      </>
+    )}
+  </svg>
+);
+
+export const SendOff = ({ className = '' }: P) => (
+  <svg viewBox="0 0 110 84" className={className} aria-hidden>
+    <ellipse cx="42" cy="78" rx="34" ry="4" fill="#8f86dc" opacity=".25" />
+    <rect x="12" y="36" width="60" height="40" rx="6" fill="#fff" stroke="#c9c5ee" strokeWidth="1.5" />
+    <path d="M12 74l22-20M72 74L50 54" stroke="#e3dffa" strokeWidth="1.6" strokeLinecap="round" />
+    <path d="M13 40l29 22 29-22" fill="#ece9ff" stroke="#8f84e3" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
+    <path transform="translate(33 52) scale(.7)" d="M12 20s-7-4.5-8.5-9A4.5 4.5 0 0 1 12 7a4.5 4.5 0 0 1 8.5 4C19 15.5 12 20 12 20z" fill="#ff8fb1" stroke="#f0668f" strokeWidth="1.5" strokeLinejoin="round" />
+    <svg x="60" y="0" width="48" height="27" viewBox="0 0 90 50" fill="none">
+      <PlaneShape />
+    </svg>
+    <path d={SPARK} transform="translate(2 20) scale(.5)" fill="#ffd45e" />
+    <path d={SPARK} transform="translate(90 54) scale(.4)" fill="#c4bdf5" />
+    <path transform="translate(80 36) scale(.45)" d="M12 20s-7-4.5-8.5-9A4.5 4.5 0 0 1 12 7a4.5 4.5 0 0 1 8.5 4C19 15.5 12 20 12 20z" fill="#ffc2d4" stroke="#f58fb0" strokeWidth="2" strokeLinejoin="round" />
+    <circle cx="100" cy="40" r="2" fill="#f9a8c0" />
+  </svg>
+);
+
+/* ---------- Gelembung sapaan + stiker smiley (langkah Identitas) ---------- */
+export const HelloBubble = ({ className = '' }: P) => (
+  <svg viewBox="0 0 96 72" className={className} aria-hidden>
+    <ellipse cx="46" cy="67" rx="30" ry="3.5" fill="#8f86dc" opacity=".22" />
+    <path d="M10 10h50a8 8 0 0 1 8 8v22a8 8 0 0 1-8 8H34l-12 11v-11h-12a8 8 0 0 1-8-8V18a8 8 0 0 1 8-8z" fill="#fff" stroke="#c9c5ee" strokeWidth="1.6" strokeLinejoin="round" />
+    <circle cx="20" cy="29" r="3" fill="#a79df3" />
+    <circle cx="31" cy="29" r="3" fill="#8f84e3" />
+    <circle cx="42" cy="29" r="3" fill="#6a5fc9" />
+    <g transform="translate(66 38)">
+      <circle r="17" fill="#ffd45e" stroke="#f0a63a" strokeWidth="2" />
+      <ellipse cx="-6" cy="-3" rx="2.2" ry="3" fill="#3b3470" />
+      <ellipse cx="6" cy="-3" rx="2.2" ry="3" fill="#3b3470" />
+      <circle cx="-6.7" cy="-4.2" r=".8" fill="#fff" />
+      <circle cx="5.3" cy="-4.2" r=".8" fill="#fff" />
+      <ellipse cx="-11" cy="4" rx="3.5" ry="2" fill="#ff9db7" opacity=".7" />
+      <ellipse cx="11" cy="4" rx="3.5" ry="2" fill="#ff9db7" opacity=".7" />
+      <path d="M-6 4q6 7 12 0" stroke="#3b3470" strokeWidth="2" strokeLinecap="round" fill="none" />
+    </g>
+    <path d={SPARK} transform="translate(78 4) scale(.4)" fill="#f7c948" />
+    <path d={SPARK} transform="translate(2 52) scale(.35)" fill="#c4bdf5" />
+  </svg>
+);
+
 /* ---------- Awan tipis & hiasan ---------- */
 const CloudShape = () => (
   <>

@@ -1,6 +1,6 @@
 'use client';
 
-import { Fragment, useState, type ReactNode } from 'react';
+import { Fragment, useState, type CSSProperties, type ReactNode } from 'react';
 import axios from 'axios';
 import { App, Button, ConfigProvider, Form, Input, Result, Select, Steps, Switch } from 'antd';
 import {
@@ -8,9 +8,11 @@ import {
   ArrowRightOutlined,
   BookOutlined,
   HomeOutlined,
+  LockOutlined,
   MailOutlined,
   SendOutlined,
   SettingOutlined,
+  UnlockOutlined,
   UserOutlined,
 } from '@ant-design/icons';
 
@@ -19,17 +21,22 @@ import { buildPayload } from '@/lib/payload';
 import { body, hand } from './fonts';
 import {
   Arrow,
+  BadgeSticker,
   BlueprintStack,
   BoxIllustration,
   Bulb,
   ClipNote,
+  EarthCare,
   DotGrid,
-  Globe,
   GearsIcon,
+  GrowthIcon,
+  HelloBubble,
   Heart,
+  IdCard,
   Leaves,
   Note,
   PageBackground,
+  PrivacyIcon,
   Smiley,
   Sparkle,
   Sprout,
@@ -46,33 +53,47 @@ import {
 const CATEGORIES = CATEGORY_VALUES.map((c) => ({ value: c, label: c }));
 
 const STEP_FIELDS: Record<number, (keyof FormValues)[]> = {
-  1: ['title', 'category', 'description'],
-  2: [],
-  3: [],
-  4: [],
+  1: [], // Identitas (opsional)
+  2: ['title', 'category', 'description'], // Ide Utama (wajib)
+  3: [], // Detail Pengerjaan (opsional)
+  4: [], // Manfaat (opsional)
 };
 
 const INITIAL: Partial<FormValues> = { isAnonymous: true };
+
+/** Kolom teks bergaris seperti buku tulis */
+const LINED: CSSProperties = {
+  lineHeight: '28px',
+  backgroundImage: 'repeating-linear-gradient(transparent 0 27px, #ece9fb 27px 28px)',
+  backgroundPositionY: '7px',
+  backgroundAttachment: 'local',
+};
+
+const WASH = {
+  indigo: 'from-indigo-100/60 via-violet-50/40',
+  mint: 'from-emerald-100/60 via-teal-50/40',
+  rose: 'from-pink-100/50 via-violet-50/40',
+} as const;
 
 /* ---------- Layout pieces ---------- */
 const Paper = ({
   children,
   tapeSide = 'right',
   tape = true,
-  wash = false,
+  wash,
   corner,
 }: {
   children: ReactNode;
   tapeSide?: 'left' | 'right';
   tape?: boolean;
-  wash?: boolean;
+  wash?: keyof typeof WASH;
   corner?: ReactNode;
 }) => (
   <div className="animate-step relative rounded-[28px] border border-indigo-100 bg-white/85 px-5 pb-6 pt-8 shadow-[0_14px_40px_-14px_rgba(106,95,201,0.35)] backdrop-blur-sm sm:px-8 sm:pb-8">
     {wash && (
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-44 rounded-b-[28px] bg-gradient-to-t from-indigo-100/60 via-violet-50/40 to-transparent"
+        className={`pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-44 rounded-b-[28px] bg-gradient-to-t ${WASH[wash]} to-transparent`}
       />
     )}
     {tape && <Tape className={`absolute -top-3 ${tapeSide === 'right' ? 'right-8 rotate-6' : 'left-8 -rotate-6'}`} />}
@@ -167,10 +188,10 @@ const TopBar = ({ step, onBack, badge }: { step: number; onBack?: () => void; ba
 );
 
 const SIDE_STEPS = [
+  { title: 'Identitas', description: 'Opsional' },
   { title: 'Ide Utama', description: 'Wajib diisi' },
   { title: 'Detail Pengerjaan', description: 'Opsional' },
   { title: 'Manfaat', description: 'Opsional' },
-  { title: 'Identitas', description: 'Opsional' },
 ];
 
 /** Panel kiri khusus layar lebar */
@@ -384,11 +405,105 @@ function CreativeBoxInner() {
             >
               <div key={step}>
                 {step === 1 && (
+                  <Paper
+                    tape={false}
+                    wash="rose"
+                    corner={
+                      <>
+                        <IdCard
+                          anonymous={isAnonymous}
+                          className="absolute -top-6 right-2 h-[92px] w-[62px] rotate-3 sm:right-4 sm:h-[108px] sm:w-[72px]"
+                        />
+                        <Sparkle className="animate-twinkle absolute right-24 top-5 h-3 w-3 text-violet-300" />
+                        <Sparkle className="animate-twinkle absolute right-3 top-[100px] h-4 w-4 text-amber-300 sm:top-[112px]" />
+                      </>
+                    }
+                  >
+                    <Leaves className="pointer-events-none absolute -bottom-3 -left-6 h-24 w-[62px] -rotate-6" />
+                    <Star className="animate-twinkle absolute -bottom-1 left-9 h-5 w-5 text-amber-300" />
+                    <StepHeader
+                      icon={<PrivacyIcon className="h-9 w-9" />}
+                      tint="bg-violet-100/70"
+                      title={
+                        <>
+                          1. Identitas <span className="text-lg font-semibold text-slate-500">(Opsional)</span>
+                        </>
+                      }
+                      subtitle="Kamu bisa mengirim secara anonim atau mengisi data diri."
+                    />
+                    <div
+                      className={`mb-4 flex items-center gap-3 rounded-2xl border bg-indigo-50/60 p-3.5 transition-shadow ${
+                        isAnonymous
+                          ? 'border-indigo-200 shadow-[0_10px_26px_-14px_rgba(106,95,201,0.65)]'
+                          : 'border-indigo-100'
+                      }`}
+                    >
+                      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-indigo-700 shadow-sm">
+                        <Spy className="h-7 w-7" />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-bold text-indigo-950">Kirim secara Anonim</p>
+                        <p className="text-xs text-slate-500">Nama dan kelas tidak akan ditampilkan.</p>
+                      </div>
+                      <Form.Item name="isAnonymous" valuePropName="checked" noStyle>
+                        <Switch aria-label="Kirim secara anonim" />
+                      </Form.Item>
+                    </div>
+
+                    <div
+                      className={`rounded-2xl border border-indigo-100 bg-white/70 p-4 transition-opacity ${
+                        isAnonymous ? 'opacity-70' : ''
+                      }`}
+                    >
+                      <p className="mb-3 flex items-center gap-2 text-xs font-semibold text-indigo-900/70">
+                        {isAnonymous ? <LockOutlined /> : <UnlockOutlined />}
+                        {isAnonymous
+                          ? 'Data diri disembunyikan. Matikan mode anonim untuk mengisi.'
+                          : 'Data dirimu akan ikut terkirim bersama ide.'}
+                      </p>
+                      <Form.Item name="name" label="Nama" className="!mb-3">
+                        <Input
+                          prefix={<UserOutlined className="text-indigo-300" />}
+                          disabled={isAnonymous}
+                          placeholder="Masukkan nama kamu (opsional)"
+                        />
+                      </Form.Item>
+                      <Form.Item name="className" label="Kelas" className="!mb-3">
+                        <Input
+                          prefix={<BookOutlined className="text-indigo-300" />}
+                          disabled={isAnonymous}
+                          placeholder="Contoh: 10A (opsional)"
+                        />
+                      </Form.Item>
+                      <Form.Item name="contact" label="Email / No. HP" className="!mb-0">
+                        <Input
+                          prefix={<MailOutlined className="text-indigo-300" />}
+                          disabled={isAnonymous}
+                          placeholder="Untuk keperluan konfirmasi (opsional)"
+                        />
+                      </Form.Item>
+                    </div>
+
+                    {footer(
+                      <div className="flex items-end gap-3 pl-8">
+                        <HelloBubble className="h-[72px] w-24 shrink-0" />
+                        <Note className="-rotate-3 pb-2">Tenang, kamu boleh kirim anonim kok!</Note>
+                      </div>,
+                      { showBack: false },
+                    )}
+                  </Paper>
+                )}
+
+                {step === 2 && (
                   <Paper>
                     <StepHeader
                       icon={<Bulb className="h-8 w-7" />}
                       tint="bg-amber-50"
-                      title="1. Ide Utama"
+                      title={
+                        <>
+                          2. Ide Utama <span className="text-lg font-semibold text-rose-400">(Wajib)</span>
+                        </>
+                      }
                       subtitle="Ceritakan ide kreatifmu secara singkat."
                     />
                     <Form.Item
@@ -418,15 +533,14 @@ function CreativeBoxInner() {
                         <Note className="-rotate-3">Ide yang baik berawal dari rasa ingin tahu!</Note>
                         <Arrow className="h-6 w-14 text-indigo-400" />
                       </>,
-                      { showBack: false },
                     )}
                   </Paper>
                 )}
 
-                {step === 2 && (
+                {step === 3 && (
                   <Paper
                     tape={false}
-                    wash
+                    wash="indigo"
                     corner={
                       <>
                         <ClipNote className="absolute -top-5 right-2 h-[84px] w-16 sm:right-4 sm:h-24 sm:w-[74px]" />
@@ -440,7 +554,7 @@ function CreativeBoxInner() {
                     <StepHeader
                       icon={<GearsIcon className="h-9 w-9" />}
                       tint="bg-indigo-100/70"
-                      title="2. Detail Pengerjaan"
+                      title="3. Detail Pengerjaan"
                       subtitle="Punya bayangan cara mewujudkannya? Tulis di sini (Opsional)"
                     />
 
@@ -451,12 +565,7 @@ function CreativeBoxInner() {
                         showCount
                         placeholder="Jelaskan secara singkat bagaimana ide ini bisa diterapkan atau dijalankan..."
                         className="!resize-none"
-                        style={{
-                          lineHeight: '28px',
-                          backgroundImage: 'repeating-linear-gradient(transparent 0 27px, #ece9fb 27px 28px)',
-                          backgroundPositionY: '7px',
-                          backgroundAttachment: 'local',
-                        }}
+                        style={LINED}
                       />
                     </Form.Item>
                     {footer(
@@ -471,89 +580,43 @@ function CreativeBoxInner() {
                   </Paper>
                 )}
 
-                {step === 3 && (
-                  <Paper>
+                {step === 4 && (
+                  <Paper
+                    wash="mint"
+                    corner={
+                      <>
+                        <BadgeSticker className="absolute -top-5 right-3 h-[76px] w-[57px] rotate-6 sm:right-5" />
+                        <Sparkle className="animate-twinkle absolute right-20 top-4 h-3 w-3 text-violet-300" />
+                        <Sparkle className="animate-twinkle absolute right-2 top-[84px] h-4 w-4 text-amber-300" />
+                      </>
+                    }
+                  >
+                    <Leaves className="pointer-events-none absolute -bottom-3 -left-6 h-24 w-[62px] -rotate-6" />
+                    <Star className="animate-twinkle absolute -bottom-1 left-9 h-5 w-5 text-amber-300" />
                     <StepHeader
-                      icon={<Sprout className="h-8 w-8" />}
+                      icon={<GrowthIcon className="h-9 w-9" />}
                       tint="bg-emerald-50"
-                      title="3. Manfaat"
+                      title="4. Manfaat"
                       subtitle="Apa manfaat utama dari ide ini?"
                     />
                     <Form.Item name="benefit" className="!mb-0">
                       <Input.TextArea
-                        rows={6}
+                        autoSize={{ minRows: 6, maxRows: 14 }}
                         maxLength={1000}
                         showCount
                         placeholder="Tulis manfaat yang akan didapatkan dari ide ini..."
+                        className="!resize-none"
+                        style={LINED}
                       />
                     </Form.Item>
                     {footer(
-                      <>
-                        <Globe className="h-16 w-16 shrink-0" />
-                        <Note className="-rotate-3">Ide kecil, dampaknya bisa sangat besar!</Note>
-                      </>,
-                    )}
-                  </Paper>
-                )}
-
-                {step === 4 && (
-                  <Paper tapeSide="left">
-                    <StepHeader
-                      icon={<UserOutlined className="text-violet-600" />}
-                      tint="bg-violet-100/70"
-                      title={
-                        <>
-                          Identitas <span className="text-lg font-semibold text-slate-500">(Opsional)</span>
-                        </>
-                      }
-                      subtitle="Kamu bisa mengirim secara anonim atau mengisi data diri."
-                    />
-                    <div className="mb-5 flex items-center gap-3 rounded-2xl border border-indigo-100 bg-indigo-50/50 p-3.5">
-                      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-indigo-700 shadow-sm">
-                        <Spy className="h-7 w-7" />
-                      </span>
-                      <div className="min-w-0 flex-1">
-                        <p className="text-sm font-bold text-indigo-950">Kirim secara Anonim</p>
-                        <p className="text-xs text-slate-500">Nama dan kelas tidak akan ditampilkan.</p>
-                      </div>
-                      <Form.Item name="isAnonymous" valuePropName="checked" noStyle>
-                        <Switch aria-label="Kirim secara anonim" />
-                      </Form.Item>
-                    </div>
-
-                    <div
-                      className={`rounded-2xl border border-indigo-100 bg-white/70 p-4 transition-opacity ${
-                        isAnonymous ? 'opacity-60' : ''
-                      }`}
-                    >
-                      <Form.Item name="name" label="Nama">
-                        <Input
-                          prefix={<UserOutlined className="text-indigo-300" />}
-                          disabled={isAnonymous}
-                          placeholder="Masukkan nama kamu (opsional)"
-                        />
-                      </Form.Item>
-                      <Form.Item name="className" label="Kelas">
-                        <Input
-                          prefix={<BookOutlined className="text-indigo-300" />}
-                          disabled={isAnonymous}
-                          placeholder="Contoh: 10A (opsional)"
-                        />
-                      </Form.Item>
-                      <Form.Item name="contact" label="Email / No. HP" className="!mb-0">
-                        <Input
-                          prefix={<MailOutlined className="text-indigo-300" />}
-                          disabled={isAnonymous}
-                          placeholder="Untuk keperluan konfirmasi (opsional)"
-                        />
-                      </Form.Item>
-                    </div>
-
-                    {footer(
-                      <>
-                        <Note className="-rotate-3">Terima kasih sudah berbagi ide!</Note>
-                        <Heart className="h-5 w-5 shrink-0 text-indigo-400" />
-                      </>,
+                      <div className="flex items-end gap-3 pl-8">
+                        <EarthCare className="h-20 w-[92px] shrink-0" />
+                        <Note className="-rotate-3 pb-2">
+                          Ide kecil, dampaknya bisa sangat besar!{' '}
+                          <Heart className="inline h-4 w-4 align-middle text-pink-300" />
+                        </Note>
+                      </div>,
                       { last: true },
                     )}
                   </Paper>
