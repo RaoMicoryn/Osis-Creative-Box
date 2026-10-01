@@ -13,6 +13,7 @@ let LOGIN: (r: Request) => Promise<Response>;
 let LOGOUT: () => Promise<Response>;
 let LIST: (r: Request) => Promise<Response>;
 let PATCH: (r: Request, c: { params: { id: string } }) => Promise<Response>;
+let DELETE: (r: Request, c: { params: { id: string } }) => Promise<Response>;
 let session: typeof import('../src/server/http/session');
 let sql: any;
 
@@ -41,6 +42,9 @@ const patch = (id: string, body: unknown, headers: Record<string, string> = {}) 
     { params: { id } },
   );
 
+const del = (id: string, headers: Record<string, string> = {}) =>
+  DELETE(new Request(`http://localhost/api/admin/aspirasi/creative-box/${id}`, { method: 'DELETE', headers }), { params: { id } });
+
 describe('Admin session & status', () => {
   let ideaId = '';
   before(async () => {
@@ -48,7 +52,9 @@ describe('Admin session & status', () => {
     LOGIN = (await import('../src/app/api/admin/login/route')).POST;
     LOGOUT = (await import('../src/app/api/admin/logout/route')).POST;
     LIST = (await import('../src/app/api/admin/aspirasi/creative-box/route')).GET;
-    PATCH = (await import('../src/app/api/admin/aspirasi/creative-box/[id]/route')).PATCH;
+    const idRoute = await import('../src/app/api/admin/aspirasi/creative-box/[id]/route');
+    PATCH = idRoute.PATCH;
+    DELETE = idRoute.DELETE;
     session = await import('../src/server/http/session');
     const postgres = (await import('postgres')).default;
     sql = postgres(process.env.DATABASE_URL!);
@@ -144,5 +150,28 @@ describe('Admin session & status', () => {
     assert.equal((await patch(ideaId, { status: 'dihapus' }, h)).status, 400);
     assert.equal((await patch(ideaId, {}, h)).status, 400);
     assert.equal((await patch('00000000-0000-4000-8000-000000000000', { status: 'ditolak' }, h)).status, 404);
+  });
+
+  it('DELETE: 401 tanpa auth; 400 id tidak valid; 404 id tidak ada', async () => {
+    const h = { authorization: 'Bearer kunci-admin-test' };
+    assert.equal((await del(ideaId)).status, 401);
+    assert.equal((await del('bukan-uuid', h)).status, 400);
+    assert.equal((await del('00000000-0000-4000-8000-000000000000', h)).status, 404);
+    const [{ n }] = await sql`SELECT count(*)::int n FROM creative_box_aspirations WHERE id = ${ideaId}`;
+    assert.equal(n, 1); // percobaan gagal tidak menghapus apa pun
+  });
+
+  it('DELETE: 200 menghapus permanen (cookie sesi); hapus lagi => 404; hanya baris itu yang hilang', async () => {
+    const cookie = cookieOf(await login('password-rahasia'));
+    const [other] = await sql`INSERT INTO creative_box_aspirations (judul_ide, kategori, deskripsi_ide) VALUES ('Ide lain','lainnya','d') RETURNING id`;
+    const res = await del(ideaId, { cookie });
+    const j = await res.json();
+    assert.equal(res.status, 200);
+    assert.equal(j.data.id, ideaId);
+    const gone = await sql`SELECT 1 FROM creative_box_aspirations WHERE id = ${ideaId}`;
+    assert.equal(gone.length, 0);
+    const kept = await sql`SELECT 1 FROM creative_box_aspirations WHERE id = ${other.id}`;
+    assert.equal(kept.length, 1);
+    assert.equal((await del(ideaId, { cookie })).status, 404);
   });
 });

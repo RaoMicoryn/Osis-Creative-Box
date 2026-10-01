@@ -3,9 +3,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
-import { App, Button, ConfigProvider, Descriptions, Drawer, Empty, Select, Table, Tag, Typography } from 'antd';
+import { App, Button, ConfigProvider, Descriptions, Drawer, Empty, Popconfirm, Select, Table, Tag, Typography } from 'antd';
 import type { TableProps } from 'antd';
-import { LogoutOutlined, ReloadOutlined, UserSwitchOutlined } from '@ant-design/icons';
+import { DeleteOutlined, LogoutOutlined, ReloadOutlined, UserSwitchOutlined } from '@ant-design/icons';
 import { body } from '@/components/creative-box/fonts';
 import { adminTheme } from './theme';
 
@@ -79,6 +79,7 @@ function AdminInner() {
   const [selected, setSelected] = useState<Idea | null>(null);
   const [newStatus, setNewStatus] = useState<Status>('pending');
   const [saving, setSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const reqId = useRef(0);
 
   const toLogin = useCallback(() => {
@@ -130,6 +131,29 @@ function AdminInner() {
     }
   };
 
+  const remove = async (row: Idea) => {
+    setDeletingId(row.id);
+    try {
+      await axios.delete(`/api/admin/aspirasi/creative-box/${row.id}`);
+      message.success('Ide dihapus');
+      setSelected(null);
+      // Kalau itu item terakhir di halaman > 1, mundur satu halaman (efek akan memuat ulang)
+      if (data && data.items.length === 1 && page > 1) setPage(page - 1);
+      else await load();
+    } catch (err) {
+      if (axios.isAxiosError(err) && err.response?.status === 401) return toLogin();
+      if (axios.isAxiosError(err) && err.response?.status === 404) {
+        message.info('Ide ini sudah tidak ada (mungkin sudah dihapus).');
+        setSelected(null);
+        await load();
+      } else {
+        message.error(axios.isAxiosError(err) ? err.response?.data?.message ?? 'Gagal menghapus.' : 'Terjadi kesalahan.');
+      }
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   const logout = async () => {
     try {
       await axios.post('/api/admin/logout');
@@ -137,6 +161,22 @@ function AdminInner() {
       toLogin();
     }
   };
+
+  const DeleteButton = ({ row, label }: { row: Idea; label?: string }) => (
+    <Popconfirm
+      title="Hapus ide ini?"
+      description={`"${row.judul_ide}" akan dihapus permanen dan tidak bisa dikembalikan.`}
+      okText="Ya, hapus"
+      cancelText="Batal"
+      okButtonProps={{ danger: true, loading: deletingId === row.id }}
+      onConfirm={() => remove(row)}
+      placement="left"
+    >
+      <Button danger size="small" icon={<DeleteOutlined />} aria-label="Hapus ide">
+        {label}
+      </Button>
+    </Popconfirm>
+  );
 
   const columns: TableProps<Idea>['columns'] = [
     { title: 'Tanggal', dataIndex: 'created_at', width: 160, render: (v: string) => <span className="text-xs">{fmtDate(v)}</span> },
@@ -156,7 +196,17 @@ function AdminInner() {
         ),
     },
     { title: 'Status', dataIndex: 'status', width: 160, render: (v: Status) => <Tag color={STATUS_COLOR[v]}>{STATUS_LABEL[v]}</Tag> },
-    { title: '', width: 90, render: (_, r) => <Button size="small" onClick={() => open(r)}>Detail</Button> },
+    {
+      title: '',
+      width: 130,
+      render: (_, r) => (
+        // stopPropagation: klik tombol/popup tidak ikut memicu klik baris (yang membuka detail)
+        <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+          <Button size="small" onClick={() => open(r)}>Detail</Button>
+          <DeleteButton row={r} />
+        </div>
+      ),
+    },
   ];
 
   const text = (v: string | null) =>
@@ -199,7 +249,7 @@ function AdminInner() {
             columns={columns}
             dataSource={data?.items ?? []}
             loading={loading}
-            scroll={{ x: 820 }}
+            scroll={{ x: 860 }}
             locale={{ emptyText: <Empty description="Belum ada ide yang cocok" /> }}
             onRow={(r) => ({ onClick: () => open(r), className: 'cursor-pointer' })}
             pagination={{
@@ -229,6 +279,7 @@ function AdminInner() {
             <Button type="primary" loading={saving} disabled={newStatus === selected?.status} onClick={saveStatus}>
               Simpan status
             </Button>
+            {selected && <DeleteButton row={selected} label="Hapus" />}
           </div>
         }
       >

@@ -68,3 +68,9 @@ export async function updateStatus(db: Db, id: string, status: (typeof STATUS_VA
   if (!row) throw new AppError(404, 'Aspirasi tidak ditemukan.');
   return row;
 }
+
+export async function deleteIdea(db: Db, id: string) {
+  const [row] = await db.delete(t).where(eq(t.id, id)).returning({ id: t.id });
+  if (!row) throw new AppError(404, 'Aspirasi tidak ditemukan.');
+  return row;
+}

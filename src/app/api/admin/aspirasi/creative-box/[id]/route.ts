@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { getDb } from '@/server/db';
 import { STATUS_VALUES } from '@/server/db/schema';
-import { updateStatus } from '@/server/creative-box/service';
+import { deleteIdea, updateStatus } from '@/server/creative-box/service';
 import { parseOrThrow } from '@/server/creative-box/validation';
 import { requireAdmin } from '@/server/http/admin-auth';
 import { readJson } from '@/server/http/body';
@@ -25,5 +25,17 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
     return ok(200, 'Status berhasil diperbarui.', row, { 'Cache-Control': 'no-store' });
   } catch (err) {
     return handleError(err, 'PATCH /api/admin/aspirasi/creative-box/[id]');
+  }
+}
+
+/** DELETE /api/admin/aspirasi/creative-box/:id  (Admin OSIS & Pembina) - hapus PERMANEN */
+export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+  try {
+    requireAdmin(req);
+    const id = parseOrThrow(idSchema, params.id);
+    const row = await deleteIdea(getDb(), id);
+    return ok(200, 'Ide berhasil dihapus.', row, { 'Cache-Control': 'no-store' });
+  } catch (err) {
+    return handleError(err, 'DELETE /api/admin/aspirasi/creative-box/[id]');
   }
 }
