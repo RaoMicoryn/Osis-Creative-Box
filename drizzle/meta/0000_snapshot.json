@@ -1,0 +1,254 @@
+{
+  "id": "54790352-201b-4814-950a-d0a24377ee68",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.creative_box_aspirations": {
+      "name": "creative_box_aspirations",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "judul_ide": {
+          "name": "judul_ide",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kategori": {
+          "name": "kategori",
+          "type": "creative_box_kategori",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "deskripsi_ide": {
+          "name": "deskripsi_ide",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "detail_pengerjaan": {
+          "name": "detail_pengerjaan",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "manfaat": {
+          "name": "manfaat",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_anonymous": {
+          "name": "is_anonymous",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "nama_siswa": {
+          "name": "nama_siswa",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "kelas": {
+          "name": "kelas",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "kontak": {
+          "name": "kontak",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "creative_box_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "cb_status_created_idx": {
+          "name": "cb_status_created_idx",
+          "columns": [
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": false,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "cb_kategori_created_idx": {
+          "name": "cb_kategori_created_idx",
+          "columns": [
+            {
+              "expression": "kategori",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": false,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "cb_created_idx": {
+          "name": "cb_created_idx",
+          "columns": [
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": false,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "cb_deskripsi_max_500": {
+          "name": "cb_deskripsi_max_500",
+          "value": "char_length(\"creative_box_aspirations\".\"deskripsi_ide\") <= 500"
+        },
+        "cb_detail_max_1000": {
+          "name": "cb_detail_max_1000",
+          "value": "\"creative_box_aspirations\".\"detail_pengerjaan\" IS NULL OR char_length(\"creative_box_aspirations\".\"detail_pengerjaan\") <= 1000"
+        },
+        "cb_manfaat_max_1000": {
+          "name": "cb_manfaat_max_1000",
+          "value": "\"creative_box_aspirations\".\"manfaat\" IS NULL OR char_length(\"creative_box_aspirations\".\"manfaat\") <= 1000"
+        },
+        "cb_anonim_tanpa_identitas": {
+          "name": "cb_anonim_tanpa_identitas",
+          "value": "NOT \"creative_box_aspirations\".\"is_anonymous\" OR (\"creative_box_aspirations\".\"nama_siswa\" IS NULL AND \"creative_box_aspirations\".\"kelas\" IS NULL AND \"creative_box_aspirations\".\"kontak\" IS NULL)"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.rate_limit_hits": {
+      "name": "rate_limit_hits",
+      "schema": "",
+      "columns": {
+        "key": {
+          "name": "key",
+          "type": "varchar(128)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "window_start": {
+          "name": "window_start",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "count": {
+          "name": "count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "rate_limit_hits_key_window_start_pk": {
+          "name": "rate_limit_hits_key_window_start_pk",
+          "columns": [
+            "key",
+            "window_start"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.creative_box_kategori": {
+      "name": "creative_box_kategori",
+      "schema": "public",
+      "values": [
+        "lingkungan",
+        "acara_sekolah",
+        "fasilitas",
+        "akademik",
+        "lainnya"
+      ]
+    },
+    "public.creative_box_status": {
+      "name": "creative_box_status",
+      "schema": "public",
+      "values": [
+        "pending",
+        "dibaca_osis",
+        "disetujui_pembina",
+        "ditolak"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

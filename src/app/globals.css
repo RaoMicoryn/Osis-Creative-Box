@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Gerak dekoratif: hanya untuk yang tidak meminta reduced motion */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes floaty {
+    0%, 100% { transform: translateY(0) rotate(-1deg); }
+    50% { transform: translateY(-8px) rotate(1deg); }
+  }
+  @keyframes twinkle {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: .35; transform: scale(.75); }
+  }
+  @keyframes step-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes drift {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(22px); }
+  }
+  .animate-drift { animation: drift 18s ease-in-out infinite; }
+  .animate-floaty { animation: floaty 5s ease-in-out infinite; }
+  .animate-twinkle { animation: twinkle 3.2s ease-in-out infinite; }
+  .animate-step { animation: step-in .35s ease-out both; }
+}
